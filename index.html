@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADAM BARLOW | WEB ZONE</title>
+    <style>
+        /* RETRO 90s STYLING */
+        body {
+            background-color: #000000;
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #00FF00;
+            font-family: "Courier New", Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 4px ridge #888888;
+            background-color: #111;
+            padding: 10px;
+        }
+
+        /* HEADERS */
+        h1 {
+            font-size: 48px;
+            color: #FF00FF;
+            text-shadow: 4px 4px #00FFFF;
+            margin-bottom: 5px;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            background-color: #0000AA;
+            color: #FFFF00;
+            padding: 5px;
+            border: 2px outset #FFFFFF;
+            font-size: 24px;
+            margin-top: 30px;
+        }
+
+        /* LINKS */
+        a {
+            color: #00FFFF;
+            text-decoration: underline;
+        }
+        a:hover {
+            background-color: #00FFFF;
+            color: #000000;
+            cursor: help;
+        }
+
+        /* MARQUEE SIMULATION */
+        .marquee-container {
+            background-color: #000;
+            border: 2px inset #555;
+            color: #FF0000;
+            font-weight: bold;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 20px;
+        }
+        .marquee-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+            font-size: 18px;
+        }
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        /* RETRO TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #00FF00;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #00FF00;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #003300;
+            color: #00FF00;
+        }
+
+        /* BUTTONS */
+        .retro-btn {
+            display: inline-block;
+            background: #C0C0C0;
+            color: #000 !important;
+            padding: 10px 20px;
+            font-weight: bold;
+            text-decoration: none;
+            border-top: 3px solid #FFF;
+            border-left: 3px solid #FFF;
+            border-right: 3px solid #000;
+            border-bottom: 3px solid #000;
+            margin: 10px;
+            font-size: 20px;
+        }
+        .retro-btn:active {
+            border-top: 3px solid #000;
+            border-left: 3px solid #000;
+            border-right: 3px solid #FFF;
+            border-bottom: 3px solid #FFF;
+        }
+
+        /* BLINK ANIMATION */
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        .fire {
+            color: orange;
+            font-weight: bold;
+        }
+
+        hr {
+            border: 0;
+            border-top: 2px dashed #00FF00;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- HEADER -->
+    <div style="text-align: center; margin-bottom: 20px;">
+        <span style="font-size: 100px;">💾</span>
+        <h1>ADAM BARLOW</h1>
+        <p style="font-size: 18px; color: #FFF;">/// ARCHITECT OF THE FUTURE ///</p>
+    </div>
+
+    <!-- MARQUEE -->
+    <div class="marquee-container">
+        <div class="marquee-text">
+            *** WELCOME TO MY WEB ZONE *** DRIVING AI ADOPTION *** SCALING TEAMS FROM 10 TO 50+ *** HIRE ME TODAY ***
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div style="background: #333; padding: 10px; border: 2px solid #555;">
+        [ <a href="#stats">HIGH SCORES</a> ] 
+        [ <a href="#missions">MISSIONS</a> ] 
+        [ <a href="mailto:dadambarlow@gmail.com">EMAIL ME</a> ]
+    </div>
+
+    <!-- INTRO -->
+    <p style="font-size: 18px; line-height: 1.5; margin: 30px 0;">
+        <span class="blink">></span> INITIATING SEQUENCE...<br>
+        I am a <span class="fire">Strategic Solutions Leader</span> building safe AI systems and high-performing teams. I scale quotas, automate the boring stuff, and win big.
+    </p>
+
+    <!-- HIGH SCORES (STATS) -->
+    <h2 id="stats">🏆 HIGH SCORES (FY24)</h2>
+    <table>
+        <tr>
+            <th>METRIC</th>
+            <th>VALUE</th>
+            <th>STATUS</th>
+        </tr>
+        <tr>
+            <td>QUOTA ATTAINMENT</td>
+            <td style="font-size: 24px; color: #FFFF00; font-weight: bold;">111%</td>
+            <td><span class="blink">NEW RECORD!</span> ($114.2M)</td>
+        </tr>
+        <tr>
+            <td>AI ADOPTION</td>
+            <td style="font-size: 24px; color: #FFFF00; font-weight: bold;">+40%</td>
+            <td>VIA "CATALYST" AUTOMATION</td>
+        </tr>
+        <tr>
+            <td>TEAM SCALING</td>
+            <td style="font-size: 24px; color: #FFFF00; font-weight: bold;">10 &rarr; 50+</td>
+            <td>HYPERGROWTH MODE</td>
+        </tr>
+    </table>
+
+    <!-- MISSION LOGS -->
+    <h2 id="missions">📂 MISSION LOGS</h2>
+    
+    <div style="border: 1px dotted #00FF00; padding: 15px; margin-bottom: 15px; text-align: left;">
+        <h3 style="margin-top: 0; color: #00FFFF;">> CURRENT OBJECTIVE: GITHUB (2021-PRESENT)</h3>
+        <p><strong>ROLE:</strong> Sr. Manager, Solutions Engineering</p>
+        <ul>
+            <li>SCALED TEAM QUOTA: $86M &rarr; $102M</li>
+            <li>DEPLOYED "BRIDGE PROGRAM" TO FIX TALENT GAPS</li>
+            <li>EXECUTIVE SPONSOR FOR PIMCO (600 SEAT DEAL)</li>
+        </ul>
+    </div>
+
+    <div style="border: 1px dotted #00FF00; padding: 15px; margin-bottom: 15px; text-align: left;">
+        <h3 style="margin-top: 0; color: #00FFFF;">> PREVIOUS MISSION: MICROSOFT (2018-2019)</h3>
+        <p><strong>ROLE:</strong> Global Black Belt (Azure DevOps)</p>
+        <ul>
+            <li>SPECIAL OPS FOR KUBERNETES (AKS)</li>
+            <li>FORTUNE 500 DEPLOYMENTS</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <!-- LINKS -->
+    <h2>🌐 COMMS LINKS</h2>
+    <p>CLICK BELOW TO ESTABLISH CONNECTION</p>
+    
+    <div>
+        <a href="https://www.linkedin.com/in/adbarlow/" target="_blank" class="retro-btn">
+            LINKEDIN PROFILE
+        </a>
+        <br>
+        <a href="https://github.com/AdamTheCreator" target="_blank" class="retro-btn">
+            GITHUB REPO
+        </a>
+    </div>
+
+    <br><br>
+    
+    <!-- FOOTER -->
+    <div style="font-size: 12px; color: #666; border-top: 1px solid #333; padding-top: 10px;">
+        COPYRIGHT &copy; 1999-2025 ADAM BARLOW.<br>
+        EMAIL: <a href="mailto:dadambarlow@gmail.com" style="color:#00FF00;">dadambarlow@gmail.com</a><br>
+        OPTIMIZED FOR NETSCAPE NAVIGATOR 4.0<br>
+        <span class="blink">_</span>
+    </div>
+
+</div>
+
+</body>
+</html>
