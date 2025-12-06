@@ -520,10 +520,10 @@
 
         let walls = [];
         let dots = [];
-        let pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.15, moveProgress: 0, currentX: 9, currentY: 13 }; // Dir: 0=Up, 1=Right, 2=Down, 3=Left, 4=Stop
+        let pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.075, moveProgress: 0, currentX: 9, currentY: 13 }; // Dir: 0=Up, 1=Right, 2=Down, 3=Left, 4=Stop
         let ghosts = [
-            { x: 9, y: 7, color: 'red', dir: 1, speed: 0.1, moveProgress: 0, currentX: 9, currentY: 7 },
-            { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.1, moveProgress: 0, currentX: 10, currentY: 7 }
+            { x: 9, y: 7, color: 'red', dir: 1, speed: 0.05, moveProgress: 0, currentX: 9, currentY: 7 },
+            { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.05, moveProgress: 0, currentX: 10, currentY: 7 }
         ];
 
         function initGame() {
@@ -563,10 +563,10 @@
             }
 
             // Reset entities
-            pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.15, moveProgress: 0, currentX: 9, currentY: 13 };
+            pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.075, moveProgress: 0, currentX: 9, currentY: 13 };
             ghosts = [
-                { x: 9, y: 7, color: 'red', dir: 1, speed: 0.08, moveProgress: 0, currentX: 9, currentY: 7 },
-                { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.08, moveProgress: 0, currentX: 10, currentY: 7 }
+                { x: 9, y: 7, color: 'red', dir: 1, speed: 0.05, moveProgress: 0, currentX: 9, currentY: 7 },
+                { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.05, moveProgress: 0, currentX: 10, currentY: 7 }
             ];
         }
 
