@@ -51,6 +51,7 @@
         .cyan { color: var(--ghost-cyan); }
         .pink { color: var(--ghost-pink); }
         .orange { color: var(--ghost-orange); }
+        .green { color: #00FF00; }
 
         /* INTRO SCREEN */
         #intro-screen {
@@ -66,16 +67,17 @@
 
         .logo-box {
             border: 4px double var(--wall-blue);
-            padding: 20px;
+            padding: 20px 40px;
             margin-bottom: 40px;
             box-shadow: 0 0 15px var(--wall-blue);
         }
 
         h1 {
-            font-size: 40px;
+            font-size: 32px; 
             line-height: 1.5;
             margin: 0;
             text-shadow: 4px 4px var(--ghost-pink);
+            white-space: nowrap;
         }
 
         .menu-list {
@@ -100,7 +102,7 @@
 
         /* THE PACMAN CURSOR */
         .menu-item::before {
-            content: 'C'; /* Rough shape of open mouth */
+            content: 'C'; 
             position: absolute;
             left: 0;
             color: var(--pac-yellow);
@@ -134,7 +136,9 @@
             border-bottom: 4px solid var(--wall-blue);
             padding-bottom: 10px;
             margin-bottom: 30px;
-            font-size: 14px;
+            font-size: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .card {
@@ -155,19 +159,70 @@
             font-size: 14px;
         }
 
-        /* STATS GRID */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        /* STATS LAYOUT - VERTICAL STACK */
+        .stats-container {
+            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
 
-        .stat-box {
-            text-align: center;
+        .stat-row {
+            display: flex;
+            flex-direction: column;
             border: 1px dotted #333;
             padding: 15px;
+            position: relative;
         }
-        .big-num { font-size: 32px; color: var(--pac-yellow); margin: 10px 0; }
+        
+        @media (min-width: 600px) {
+            .stat-row {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                text-align: left;
+            }
+            .stat-year {
+                flex: 0 0 100px;
+                border-right: 1px dashed #333;
+                margin-right: 20px;
+                font-size: 20px;
+                color: var(--ghost-cyan);
+            }
+            .stat-details {
+                flex: 1;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+            }
+        }
+
+        .stat-year {
+            color: var(--ghost-cyan);
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        @media (max-width: 599px) {
+            .stat-year {
+                border-bottom: 1px dashed #333;
+                padding-bottom: 5px;
+            }
+            .stat-details {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+
+        .metric-group {
+            text-align: center;
+        }
+
+        .big-num { font-size: 20px; color: var(--pac-yellow); margin-bottom: 5px; }
+        .sub-text { font-size: 9px; color: #AAA; line-height: 1.4; text-transform: uppercase; }
+        .green { color: #00FF00; }
         
         /* EXP LIST */
         .exp-item {
@@ -210,8 +265,8 @@
         <div style="font-size: 14px; margin-bottom: 40px;">002025 &nbsp;&nbsp; 114200000</div>
 
         <div class="logo-box">
-            <h1 class="yellow">ADAM<br>BARLOW</h1>
-            <div style="font-size: 12px; margin-top: 10px; color: #AAA;">SOLUTIONS ARCHITECT</div>
+            <h1 class="yellow">ADAM BARLOW</h1>
+            <div style="font-size: 12px; margin-top: 15px; color: #AAA; letter-spacing: 2px;">SOLUTIONS ARCHITECT</div>
         </div>
 
         <ul class="menu-list">
@@ -233,31 +288,72 @@
         
         <!-- HEADER HUD -->
         <div class="header-bar">
-            <div>PLAYER: <span class="cyan">ADAM</span></div>
+            <div>PLAYER: <span class="cyan">ADAM BARLOW</span></div>
             <div>LEVEL: <span class="yellow">MANAGER</span></div>
             <div>CREDITS: <span class="red">99</span></div>
         </div>
 
-        <!-- SECTION: STATS -->
+        <!-- SECTION: STATS (STACKED LAYOUT) -->
         <div id="sec-stats" class="card">
-            <div class="card-title">HIGH SCORES (FY24)</div>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div>QUOTA ATTAINMENT</div>
-                    <div class="big-num">111%</div>
-                    <div class="blink red">NEW RECORD!</div>
-                    <div style="font-size: 10px;">($114.2M REVENUE)</div>
+            <div class="card-title">PERFORMANCE HISTORY</div>
+            <div class="stats-container">
+                
+                <!-- FY25 ROW -->
+                <div class="stat-row" style="border-color: var(--ghost-pink);">
+                    <div class="stat-year">FY25<br><span style="font-size:10px; color:#666">(YTD)</span></div>
+                    <div class="stat-details">
+                        <div class="metric-group">
+                            <div class="big-num">+110%</div>
+                            <div class="sub-text">METERED/AI<br>GROWTH</div>
+                        </div>
+                        <div class="metric-group">
+                            <div class="big-num green">+57%</div>
+                            <div class="sub-text">SECURITY<br>SALES</div>
+                        </div>
+                        <div class="metric-group">
+                            <div class="blink red" style="font-size: 10px;">ACTIVE<br>STREAK</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <div>AI ADOPTION</div>
-                    <div class="big-num">+40%</div>
-                    <div style="font-size: 10px;">VIA "CATALYST" AUTOMATION</div>
+
+                <!-- FY24 ROW -->
+                <div class="stat-row">
+                    <div class="stat-year">FY24</div>
+                    <div class="stat-details">
+                        <div class="metric-group">
+                            <div class="big-num">111%</div>
+                            <div class="sub-text">QUOTA<br>ATTAINMENT</div>
+                        </div>
+                        <div class="metric-group">
+                            <div class="big-num green">$114M</div>
+                            <div class="sub-text">TOTAL<br>REVENUE</div>
+                        </div>
+                        <div class="metric-group">
+                            <div class="big-num">+39%</div>
+                            <div class="sub-text">YoY BOOKINGS<br>GROWTH</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <div>TEAM SCALING</div>
-                    <div class="big-num">10&rarr;50</div>
-                    <div style="font-size: 10px;">HYPERGROWTH MODE</div>
+
+                <!-- FY23 ROW -->
+                <div class="stat-row">
+                    <div class="stat-year">FY23</div>
+                    <div class="stat-details">
+                        <div class="metric-group">
+                            <div class="big-num">95%</div>
+                            <div class="sub-text">QUOTA<br>ATTAINMENT</div>
+                        </div>
+                        <div class="metric-group">
+                            <div class="big-num green">$82M</div>
+                            <div class="sub-text">TOTAL<br>REVENUE</div>
+                        </div>
+                        <div class="metric-group">
+                            <div class="big-num">$12.7M</div>
+                            <div class="sub-text">H1 CLOSED<br>(OVER PLAN)</div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
 
