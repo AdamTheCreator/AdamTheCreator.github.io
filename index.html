@@ -28,7 +28,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            touch-action: none; /* Prevent scrolling while playing */
         }
 
         /* SCANLINE EFFECT */
@@ -69,7 +68,7 @@
         .logo-box {
             border: 4px double var(--wall-blue);
             padding: 20px 40px;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             box-shadow: 0 0 15px var(--wall-blue);
         }
 
@@ -85,12 +84,11 @@
             list-style: none;
             padding: 0;
             text-align: left;
-            margin-bottom: 20px;
         }
 
         .menu-item {
             font-size: 20px;
-            margin: 20px 0;
+            margin: 25px 0;
             cursor: pointer;
             padding-left: 40px;
             position: relative;
@@ -248,24 +246,6 @@
             font-size: 12px;
         }
         .back-btn:hover { background: #FFF; color: #000; }
-        
-        /* GAME STYLES */
-        #game-area {
-            text-align: center;
-            margin-top: 20px;
-            min-height: 320px;
-        }
-        canvas {
-            background-color: #000;
-            display: block;
-            margin: 0 auto;
-        }
-        #game-instructions {
-            font-size: 10px;
-            color: #888;
-            margin-top: 10px;
-            text-transform: uppercase;
-        }
 
         /* FOOTER */
         footer {
@@ -296,19 +276,16 @@
             <li class="menu-item red" onclick="showSection('all')">WARP TO ALL DATA</li>
         </ul>
 
-        <!-- GAME AREA -->
-        <div id="game-area">
-            <div id="start-game-btn" class="blink" onclick="initGame()" style="cursor: pointer; color: var(--pac-yellow); font-size: 14px; padding: 20px; border: 2px dashed #333; display: inline-block;">
-                &gt; CLICK TO PLAY PAC-MAN &lt;
+        <!-- MERGED PRESS START / PLAY LINK -->
+        <a href="Adam_Pacman_Game.html" style="text-decoration:none;">
+            <div class="blink" style="margin-top: 50px; color: var(--ghost-pink); cursor: pointer; font-size: 16px; padding: 10px; border: 2px dashed #333;">
+                &gt; PRESS START TO PLAY PAC-MAN &lt;
             </div>
-            
-            <div id="game-container" class="hidden">
-                <canvas id="gameCanvas" width="380" height="300" style="border: 2px solid var(--wall-blue); box-shadow: 0 0 10px var(--wall-blue);"></canvas>
-                <div id="game-instructions">ARROWS OR SWIPE TO MOVE</div>
-                <div id="game-status" style="margin-top: 5px; color: var(--pac-yellow);">SCORE: 0</div>
-            </div>
+        </a>
+        
+        <div style="margin-top: 40px; font-size: 30px;">
+            👻 <span style="color:var(--ghost-pink)">👻</span> <span style="color:var(--ghost-cyan)">👻</span> <span style="color:var(--ghost-orange)">👻</span>
         </div>
-
     </div>
 
     <!-- 2. MAIN DASHBOARD (HIDDEN INITIALLY) -->
@@ -462,16 +439,18 @@
     </footer>
 
     <script>
-        // NAVIGATION LOGIC
         function showSection(sectionId) {
-            stopGame(); // Stop game if running
+            // Hide intro
             document.getElementById('intro-screen').classList.add('hidden');
+            // Show dashboard
             document.getElementById('dashboard').classList.remove('hidden');
 
+            // Hide all cards first
             document.getElementById('sec-stats').classList.add('hidden');
             document.getElementById('sec-missions').classList.add('hidden');
             document.getElementById('sec-contact').classList.add('hidden');
 
+            // Show selected
             if (sectionId === 'all') {
                 document.getElementById('sec-stats').classList.remove('hidden');
                 document.getElementById('sec-missions').classList.remove('hidden');
@@ -484,344 +463,7 @@
         function showIntro() {
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('intro-screen').classList.remove('hidden');
-            // Show start button again, hide game
-            document.getElementById('start-game-btn').classList.remove('hidden');
-            document.getElementById('game-container').classList.add('hidden');
         }
-
-        // --- MINI PAC-MAN GAME ENGINE ---
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const TILE_SIZE = 20;
-        const COLS = 19;
-        const ROWS = 15;
-        let gameInterval;
-        let gameRunning = false;
-        let score = 0;
-
-        // Map: 1=Wall, 0=Dot, 2=Empty/PacStart, 9=GhostStart
-        // 19 cols x 15 rows
-        const mapLayout = [
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
-            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
-            [1,1,1,1,0,1,1,1,2,1,2,1,1,1,0,1,1,1,1],
-            [2,2,2,1,0,1,2,2,9,2,9,2,2,1,0,1,2,2,2], // Ghosts at center
-            [1,1,1,1,0,1,2,1,1,1,1,1,2,1,0,1,1,1,1],
-            [1,0,0,0,0,0,0,1,2,2,2,1,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
-            [1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,1],
-            [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1],
-            [1,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,1], // Pacman starts near bottom
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-        ];
-
-        let walls = [];
-        let dots = [];
-        let pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.075, moveProgress: 0, currentX: 9, currentY: 13 }; // Dir: 0=Up, 1=Right, 2=Down, 3=Left, 4=Stop
-        let ghosts = [
-            { x: 9, y: 7, color: 'red', dir: 1, speed: 0.05, moveProgress: 0, currentX: 9, currentY: 7 },
-            { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.05, moveProgress: 0, currentX: 10, currentY: 7 }
-        ];
-        
-        // Touch variables
-        let touchStartX = 0;
-        let touchStartY = 0;
-
-        function initGame() {
-            if (gameRunning) return;
-            
-            // Show canvas
-            document.getElementById('start-game-btn').classList.add('hidden');
-            document.getElementById('game-container').classList.remove('hidden');
-            
-            resetLevel();
-            score = 0;
-            updateScore();
-            gameRunning = true;
-            
-            // Listen for keys
-            window.addEventListener('keydown', handleInput);
-            
-            // Listen for touch
-            canvas.addEventListener('touchstart', handleTouchStart, {passive: false});
-            canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
-            
-            // Start Loop
-            requestAnimationFrame(gameLoop);
-        }
-
-        function stopGame() {
-            gameRunning = false;
-            window.removeEventListener('keydown', handleInput);
-            canvas.removeEventListener('touchstart', handleTouchStart);
-            canvas.removeEventListener('touchmove', handleTouchMove);
-        }
-
-        function resetLevel() {
-            walls = [];
-            dots = [];
-            
-            // Parse map
-            for(let r=0; r<ROWS; r++){
-                for(let c=0; c<COLS; c++){
-                    if(mapLayout[r][c] === 1) walls.push({x:c, y:r});
-                    if(mapLayout[r][c] === 0) dots.push({x:c, y:r, active:true});
-                }
-            }
-
-            // Reset entities
-            pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.075, moveProgress: 0, currentX: 9, currentY: 13 };
-            ghosts = [
-                { x: 9, y: 7, color: 'red', dir: 1, speed: 0.05, moveProgress: 0, currentX: 9, currentY: 7 },
-                { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.05, moveProgress: 0, currentX: 10, currentY: 7 }
-            ];
-        }
-
-        function handleInput(e) {
-            // Prevent scrolling with arrows
-            if([37,38,39,40].indexOf(e.keyCode) > -1) {
-                e.preventDefault();
-            }
-
-            if(e.keyCode === 38) pacman.nextDir = 0; // Up
-            if(e.keyCode === 39) pacman.nextDir = 1; // Right
-            if(e.keyCode === 40) pacman.nextDir = 2; // Down
-            if(e.keyCode === 37) pacman.nextDir = 3; // Left
-        }
-
-        // --- SWIPE HANDLING ---
-        function handleTouchStart(e) {
-            e.preventDefault();
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }
-
-        function handleTouchMove(e) {
-            e.preventDefault();
-            if(!touchStartX || !touchStartY) return;
-
-            let touchEndX = e.touches[0].clientX;
-            let touchEndY = e.touches[0].clientY;
-            
-            let dx = touchEndX - touchStartX;
-            let dy = touchEndY - touchStartY;
-            
-            // Threshold to register swipe
-            if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    // Horizontal
-                    if (dx > 0) pacman.nextDir = 1; // Right
-                    else pacman.nextDir = 3; // Left
-                } else {
-                    // Vertical
-                    if (dy > 0) pacman.nextDir = 2; // Down
-                    else pacman.nextDir = 0; // Up
-                }
-                // Reset start to current to allow continuous steering
-                touchStartX = touchEndX;
-                touchStartY = touchEndY;
-            }
-        }
-
-        function gameLoop() {
-            if(!gameRunning) return;
-
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-
-        function update() {
-            // Move Pacman
-            moveEntity(pacman, true);
-            
-            // Move Ghosts
-            ghosts.forEach(g => {
-                // Simple random AI at intersections
-                if (g.moveProgress === 0 && isIntersection(g.x, g.y)) {
-                    const dirs = getValidDirections(g.x, g.y);
-                    g.dir = dirs[Math.floor(Math.random() * dirs.length)];
-                }
-                // Determine next move if blocked
-                if (isBlocked(g.x, g.y, g.dir) && g.moveProgress === 0) {
-                     const dirs = getValidDirections(g.x, g.y);
-                     g.dir = dirs[Math.floor(Math.random() * dirs.length)];
-                }
-                moveEntity(g, false);
-            });
-
-            // Check Collisions (Ghost)
-            ghosts.forEach(g => {
-                const dist = Math.hypot(pacman.currentX - g.currentX, pacman.currentY - g.currentY);
-                if(dist < 0.5) {
-                    gameOver();
-                }
-            });
-
-            // Check Dots
-            dots.forEach(d => {
-                if(d.active) {
-                    const dist = Math.hypot(pacman.currentX - d.x, pacman.currentY - d.y);
-                    if(dist < 0.5) {
-                        d.active = false;
-                        score += 10;
-                        updateScore();
-                        checkWin();
-                    }
-                }
-            });
-        }
-
-        function moveEntity(e, isPlayer) {
-            // If currently moving between tiles
-            if (e.moveProgress > 0) {
-                e.moveProgress += e.speed;
-                if (e.moveProgress >= 1) {
-                    e.moveProgress = 0;
-                    // Finalize position
-                    if(e.dir === 0) e.y--;
-                    if(e.dir === 1) e.x++;
-                    if(e.dir === 2) e.y++;
-                    if(e.dir === 3) e.x--;
-                    
-                    e.currentX = e.x;
-                    e.currentY = e.y;
-                    
-                    if(isPlayer) {
-                        // Try to apply next direction
-                        if(e.nextDir !== 4 && !isBlocked(e.x, e.y, e.nextDir)) {
-                            e.dir = e.nextDir;
-                        } else if (isBlocked(e.x, e.y, e.dir)) {
-                            e.dir = 4; // Stop
-                        }
-                    }
-                } else {
-                    // Interpolate
-                    if(e.dir === 0) e.currentY = e.y - e.moveProgress;
-                    if(e.dir === 1) e.currentX = e.x + e.moveProgress;
-                    if(e.dir === 2) e.currentY = e.y + e.moveProgress;
-                    if(e.dir === 3) e.currentX = e.x - e.moveProgress;
-                }
-            } else {
-                // Not moving, check if we can start moving
-                if(isPlayer && e.nextDir !== 4 && !isBlocked(e.x, e.y, e.nextDir)) {
-                    e.dir = e.nextDir;
-                }
-                
-                if (e.dir !== 4 && !isBlocked(e.x, e.y, e.dir)) {
-                    e.moveProgress += e.speed;
-                }
-            }
-        }
-
-        function isBlocked(x, y, dir) {
-            let nextX = x; 
-            let nextY = y;
-            if(dir === 0) nextY--;
-            if(dir === 1) nextX++;
-            if(dir === 2) nextY++;
-            if(dir === 3) nextX--;
-
-            // Bounds check
-            if(nextX < 0 || nextX >= COLS || nextY < 0 || nextY >= ROWS) return true;
-            
-            // Wall check
-            return walls.some(w => w.x === nextX && w.y === nextY);
-        }
-
-        function isIntersection(x, y) {
-            // Count open paths
-            let open = 0;
-            if(!isBlocked(x, y, 0)) open++;
-            if(!isBlocked(x, y, 1)) open++;
-            if(!isBlocked(x, y, 2)) open++;
-            if(!isBlocked(x, y, 3)) open++;
-            return open > 2;
-        }
-
-        function getValidDirections(x, y) {
-            const dirs = [];
-            if(!isBlocked(x, y, 0)) dirs.push(0);
-            if(!isBlocked(x, y, 1)) dirs.push(1);
-            if(!isBlocked(x, y, 2)) dirs.push(2);
-            if(!isBlocked(x, y, 3)) dirs.push(3);
-            return dirs;
-        }
-
-        function draw() {
-            // Clear
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw Walls
-            ctx.fillStyle = "#1919A6";
-            walls.forEach(w => {
-                ctx.fillRect(w.x * TILE_SIZE, w.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            });
-
-            // Draw Dots
-            ctx.fillStyle = "#FFB8FF";
-            dots.forEach(d => {
-                if(d.active) {
-                    ctx.beginPath();
-                    ctx.arc(d.x * TILE_SIZE + TILE_SIZE/2, d.y * TILE_SIZE + TILE_SIZE/2, 2, 0, Math.PI*2);
-                    ctx.fill();
-                }
-            });
-
-            // Draw Pacman
-            ctx.fillStyle = "#FFFF00";
-            ctx.beginPath();
-            let mouth = (Date.now() % 200 < 100) ? 0.2 : 0.05;
-            let rotation = 0;
-            if(pacman.dir === 0) rotation = -Math.PI/2;
-            if(pacman.dir === 2) rotation = Math.PI/2;
-            if(pacman.dir === 3) rotation = Math.PI;
-            
-            ctx.translate(pacman.currentX * TILE_SIZE + TILE_SIZE/2, pacman.currentY * TILE_SIZE + TILE_SIZE/2);
-            ctx.rotate(rotation);
-            ctx.arc(0, 0, TILE_SIZE/2 - 2, mouth * Math.PI, (2 - mouth) * Math.PI);
-            ctx.lineTo(0, 0);
-            ctx.fill();
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-            // Draw Ghosts
-            ghosts.forEach(g => {
-                ctx.fillStyle = g.color;
-                ctx.beginPath();
-                const gx = g.currentX * TILE_SIZE;
-                const gy = g.currentY * TILE_SIZE;
-                ctx.arc(gx + TILE_SIZE/2, gy + TILE_SIZE/2 - 2, TILE_SIZE/2 - 2, Math.PI, 0);
-                ctx.lineTo(gx + TILE_SIZE, gy + TILE_SIZE - 2);
-                ctx.lineTo(gx, gy + TILE_SIZE - 2);
-                ctx.fill();
-            });
-        }
-
-        function updateScore() {
-            document.getElementById('game-status').innerText = "SCORE: " + score;
-        }
-
-        function checkWin() {
-            if(dots.every(d => !d.active)) {
-                alert("YOU WIN! SCORE: " + score);
-                resetLevel();
-                score = 0;
-                updateScore();
-            }
-        }
-
-        function gameOver() {
-            alert("GAME OVER! SCORE: " + score);
-            resetLevel();
-            score = 0;
-            updateScore();
-        }
-
     </script>
 </body>
 </html>
