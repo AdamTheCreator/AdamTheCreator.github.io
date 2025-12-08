@@ -28,6 +28,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            touch-action: none; /* Prevent scrolling while playing */
         }
 
         /* SCANLINE EFFECT */
@@ -303,7 +304,7 @@
             
             <div id="game-container" class="hidden">
                 <canvas id="gameCanvas" width="380" height="300" style="border: 2px solid var(--wall-blue); box-shadow: 0 0 10px var(--wall-blue);"></canvas>
-                <div id="game-instructions">ARROWS TO MOVE</div>
+                <div id="game-instructions">ARROWS OR SWIPE TO MOVE</div>
                 <div id="game-status" style="margin-top: 5px; color: var(--pac-yellow);">SCORE: 0</div>
             </div>
         </div>
@@ -525,6 +526,10 @@
             { x: 9, y: 7, color: 'red', dir: 1, speed: 0.05, moveProgress: 0, currentX: 9, currentY: 7 },
             { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.05, moveProgress: 0, currentX: 10, currentY: 7 }
         ];
+        
+        // Touch variables
+        let touchStartX = 0;
+        let touchStartY = 0;
 
         function initGame() {
             if (gameRunning) return;
@@ -541,6 +546,10 @@
             // Listen for keys
             window.addEventListener('keydown', handleInput);
             
+            // Listen for touch
+            canvas.addEventListener('touchstart', handleTouchStart, {passive: false});
+            canvas.addEventListener('touchmove', handleTouchMove, {passive: false});
+            
             // Start Loop
             requestAnimationFrame(gameLoop);
         }
@@ -548,6 +557,8 @@
         function stopGame() {
             gameRunning = false;
             window.removeEventListener('keydown', handleInput);
+            canvas.removeEventListener('touchstart', handleTouchStart);
+            canvas.removeEventListener('touchmove', handleTouchMove);
         }
 
         function resetLevel() {
@@ -580,6 +591,40 @@
             if(e.keyCode === 39) pacman.nextDir = 1; // Right
             if(e.keyCode === 40) pacman.nextDir = 2; // Down
             if(e.keyCode === 37) pacman.nextDir = 3; // Left
+        }
+
+        // --- SWIPE HANDLING ---
+        function handleTouchStart(e) {
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if(!touchStartX || !touchStartY) return;
+
+            let touchEndX = e.touches[0].clientX;
+            let touchEndY = e.touches[0].clientY;
+            
+            let dx = touchEndX - touchStartX;
+            let dy = touchEndY - touchStartY;
+            
+            // Threshold to register swipe
+            if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    // Horizontal
+                    if (dx > 0) pacman.nextDir = 1; // Right
+                    else pacman.nextDir = 3; // Left
+                } else {
+                    // Vertical
+                    if (dy > 0) pacman.nextDir = 2; // Down
+                    else pacman.nextDir = 0; // Up
+                }
+                // Reset start to current to allow continuous steering
+                touchStartX = touchEndX;
+                touchStartY = touchEndY;
+            }
         }
 
         function gameLoop() {
