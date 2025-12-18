@@ -22,9 +22,9 @@
             color: #FFFFFF;
             font-family: 'Press Start 2P', cursive;
             margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow-x: hidden;
+            padding: 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -33,7 +33,7 @@
         /* SCANLINE EFFECT */
         body::after {
             content: "";
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
             background-size: 100% 4px;
@@ -56,24 +56,25 @@
         /* INTRO SCREEN */
         #intro-screen {
             width: 100%;
-            height: 100%;
+            max-width: 800px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding-top: 50px;
+            padding-top: 20px;
         }
 
         .logo-box {
             border: 4px double var(--wall-blue);
-            padding: 20px 40px;
+            padding: 30px;
             margin-bottom: 40px;
             box-shadow: 0 0 15px var(--wall-blue);
+            max-width: 90%;
         }
 
         h1 {
-            font-size: 32px; 
+            font-size: clamp(20px, 5vw, 32px); 
             line-height: 1.5;
             margin: 0;
             text-shadow: 4px 4px var(--ghost-pink);
@@ -84,49 +85,54 @@
             list-style: none;
             padding: 0;
             text-align: left;
+            width: 100%;
+            max-width: 500px;
         }
 
         .menu-item {
-            font-size: 20px;
+            font-size: clamp(14px, 4vw, 20px);
             margin: 25px 0;
             cursor: pointer;
             padding-left: 40px;
             position: relative;
             transition: color 0.2s;
+            line-height: 1.4;
         }
 
-        .menu-item:hover {
+        .menu-item:hover, .menu-item.active {
             color: var(--ghost-cyan);
             text-shadow: 2px 2px var(--wall-blue);
         }
 
         /* THE PACMAN CURSOR */
         .menu-item::before {
-            content: 'C'; 
+            content: ' ';
             position: absolute;
             left: 0;
-            color: var(--pac-yellow);
-            transform: rotate(180deg);
-            opacity: 0;
-            font-weight: 900;
+            top: 50%;
+            transform: translateY(-50%) rotate(180deg);
+            width: 0; 
+            height: 0; 
         }
 
-        .menu-item:hover::before {
-            opacity: 1;
+        .menu-item:hover::before, .menu-item.active::before {
+            content: 'C'; 
+            color: var(--pac-yellow);
+            font-weight: 900;
             animation: chomp 0.3s infinite;
+            width: auto; height: auto;
         }
 
         @keyframes chomp {
-            0% { transform: rotate(180deg) scale(1); }
-            50% { transform: rotate(180deg) scale(0.8); }
-            100% { transform: rotate(180deg) scale(1); }
+            0% { transform: translateY(-50%) rotate(180deg) scale(1); }
+            50% { transform: translateY(-50%) rotate(180deg) scale(0.8); }
+            100% { transform: translateY(-50%) rotate(180deg) scale(1); }
         }
 
         /* MAIN CONTENT DASHBOARD */
         #dashboard {
             width: 100%;
             max-width: 900px;
-            padding: 20px;
             box-sizing: border-box;
         }
 
@@ -134,18 +140,19 @@
             display: flex;
             justify-content: space-between;
             border-bottom: 4px solid var(--wall-blue);
-            padding-bottom: 10px;
+            padding-bottom: 15px;
             margin-bottom: 30px;
-            font-size: 12px;
+            font-size: clamp(10px, 3vw, 14px);
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
+            line-height: 1.5;
         }
 
         .card {
             border: 2px solid var(--wall-blue);
             background: #111;
-            margin-bottom: 30px;
-            padding: 20px;
+            margin-bottom: 40px;
+            padding: 30px 20px;
             position: relative;
         }
 
@@ -159,7 +166,7 @@
             font-size: 14px;
         }
 
-        /* STATS LAYOUT - VERTICAL STACK */
+        /* STATS LAYOUT */
         .stats-container {
             display: flex;
             flex-direction: column;
@@ -170,11 +177,11 @@
             display: flex;
             flex-direction: column;
             border: 1px dotted #333;
-            padding: 15px;
+            padding: 20px;
             position: relative;
         }
         
-        @media (min-width: 600px) {
+        @media (min-width: 700px) {
             .stat-row {
                 flex-direction: row;
                 align-items: center;
@@ -182,10 +189,10 @@
                 text-align: left;
             }
             .stat-year {
-                flex: 0 0 100px;
+                flex: 0 0 120px;
                 border-right: 1px dashed #333;
                 margin-right: 20px;
-                font-size: 20px;
+                font-size: 24px;
                 color: var(--ghost-cyan);
             }
             .stat-details {
@@ -198,21 +205,22 @@
 
         .stat-year {
             color: var(--ghost-cyan);
-            font-size: 18px;
-            margin-bottom: 10px;
+            font-size: 20px;
+            margin-bottom: 15px;
             text-align: center;
         }
         
-        @media (max-width: 599px) {
+        @media (max-width: 699px) {
             .stat-year {
                 border-bottom: 1px dashed #333;
-                padding-bottom: 5px;
+                padding-bottom: 10px;
             }
             .stat-details {
                 display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
+                grid-template-columns: 1fr;
+                gap: 20px;
                 text-align: center;
+                margin-top: 15px;
             }
         }
 
@@ -220,30 +228,39 @@
             text-align: center;
         }
 
-        .big-num { font-size: 20px; color: var(--pac-yellow); margin-bottom: 5px; }
-        .sub-text { font-size: 9px; color: #AAA; line-height: 1.4; text-transform: uppercase; }
-        .green { color: #00FF00; }
+        .big-num { font-size: 24px; color: var(--pac-yellow); margin-bottom: 8px; }
+        .sub-text { font-size: 10px; color: #AAA; line-height: 1.6; text-transform: uppercase; }
         
         /* EXP LIST */
         .exp-item {
-            margin-bottom: 25px;
+            margin-bottom: 35px;
             border-bottom: 1px dashed #333;
-            padding-bottom: 15px;
+            padding-bottom: 25px;
         }
-        .exp-role { color: var(--ghost-cyan); margin-bottom: 5px; font-size: 16px; }
-        .exp-company { color: #888; font-size: 12px; margin-bottom: 10px; }
-        .bullet { font-size: 12px; line-height: 1.8; color: #CCC; }
+        .exp-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .exp-role { color: var(--ghost-cyan); margin-bottom: 8px; font-size: 16px; line-height: 1.4; }
+        .exp-company { color: #888; font-size: 12px; margin-bottom: 15px; }
+        .bullet { 
+            font-size: 12px; 
+            line-height: 2.0; /* IMPROVED READABILITY */
+            color: #CCC; 
+            margin-bottom: 8px;
+            padding-left: 15px;
+            text-indent: -15px;
+        }
 
         /* BACK BUTTON */
         .back-btn {
             display: block;
-            width: 100px;
-            margin: 20px auto;
+            width: 140px;
+            margin: 40px auto 20px;
             text-align: center;
-            padding: 10px;
+            padding: 15px;
             border: 2px solid #FFF;
             cursor: pointer;
             font-size: 12px;
+            transition: all 0.2s;
         }
         .back-btn:hover { background: #FFF; color: #000; }
 
@@ -254,6 +271,14 @@
             font-size: 10px;
             color: #666;
             text-align: center;
+            line-height: 1.6;
+        }
+        
+        /* MOBILE TWEAKS */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .logo-box { padding: 20px 10px; }
+            .card { padding: 20px 10px; }
         }
     </style>
 </head>
@@ -261,30 +286,34 @@
 
     <!-- 1. INTRO / MENU SCREEN -->
     <div id="intro-screen">
-        <div style="font-size: 14px; margin-bottom: 10px;">1UP &nbsp;&nbsp; HIGH SCORE</div>
-        <div style="font-size: 14px; margin-bottom: 40px;">002025 &nbsp;&nbsp; 114200000</div>
+        <div style="font-size: 12px; margin-bottom: 10px; color: #888;">1UP &nbsp;&nbsp; HIGH SCORE</div>
+        <div style="font-size: 12px; margin-bottom: 40px;">002025 &nbsp;&nbsp; 114200000</div>
 
         <div class="logo-box">
             <h1 class="yellow">ADAM BARLOW</h1>
-            <div style="font-size: 12px; margin-top: 15px; color: #AAA; letter-spacing: 2px;">SOLUTIONS ARCHITECT</div>
+            <div style="font-size: clamp(10px, 3vw, 12px); margin-top: 15px; color: #AAA; letter-spacing: 2px; line-height:1.5;">SOLUTIONS ARCHITECT</div>
         </div>
 
-        <ul class="menu-list">
-            <li class="menu-item" onclick="showSection('stats')">HIGH SCORES (BY THE NUMBERS)</li>
-            <li class="menu-item" onclick="showSection('missions')">MISSION LOGS (ACCOMPLISHMENTS)</li>
-            <li class="menu-item" onclick="showSection('contact')">INSERT COIN (CONTACT)</li>
-            <li class="menu-item red" onclick="showSection('all')">WARP TO ALL DATA</li>
+        <ul class="menu-list" id="main-menu">
+            <li class="menu-item active" onclick="showSection('stats')" data-index="0">HIGH SCORES (STATS)</li>
+            <li class="menu-item" onclick="showSection('missions')" data-index="1">MISSION LOGS (EXP)</li>
+            <li class="menu-item" onclick="showSection('contact')" data-index="2">INSERT COIN (CONTACT)</li>
+            <li class="menu-item red" onclick="showSection('all')" data-index="3">WARP TO ALL DATA</li>
         </ul>
 
         <!-- MERGED PRESS START / PLAY LINK -->
         <a href="Adam_Pacman_Game.html" style="text-decoration:none;">
-            <div class="blink" style="margin-top: 50px; color: var(--ghost-pink); cursor: pointer; font-size: 16px; padding: 10px; border: 2px dashed #333;">
+            <div class="blink" style="margin-top: 40px; color: var(--ghost-pink); cursor: pointer; font-size: clamp(12px, 4vw, 16px); padding: 15px; border: 2px dashed #333; line-height: 1.5;">
                 &gt; PRESS START TO PLAY PAC-MAN &lt;
             </div>
         </a>
         
-        <div style="margin-top: 40px; font-size: 30px;">
+        <div style="margin-top: 30px; font-size: 30px; opacity: 0.7;">
             👻 <span style="color:var(--ghost-pink)">👻</span> <span style="color:var(--ghost-cyan)">👻</span> <span style="color:var(--ghost-orange)">👻</span>
+        </div>
+        
+        <div style="margin-top: 20px; font-size: 10px; color: #555;">
+            USE ARROW KEYS OR CLICK TO SELECT
         </div>
     </div>
 
@@ -294,18 +323,18 @@
         <!-- HEADER HUD -->
         <div class="header-bar">
             <div>PLAYER: <span class="cyan">ADAM BARLOW</span></div>
-            <div>LEVEL: <span class="yellow">MANAGER</span></div>
+            <div>LEVEL: <span class="yellow">REAL LIFE</span></div>
             <div>CREDITS: <span class="red">99</span></div>
         </div>
 
-        <!-- SECTION: STATS (STACKED LAYOUT) -->
+        <!-- SECTION: STATS -->
         <div id="sec-stats" class="card">
             <div class="card-title">PERFORMANCE HISTORY</div>
             <div class="stats-container">
                 
                 <!-- FY25 ROW -->
                 <div class="stat-row" style="border-color: var(--ghost-pink);">
-                    <div class="stat-year">FY25<br><span style="font-size:10px; color:#666">(YTD)</span></div>
+                    <div class="stat-year">FY25<br><span style="font-size:12px; color:#666">(YTD)</span></div>
                     <div class="stat-details">
                         <div class="metric-group">
                             <div class="big-num">+110%</div>
@@ -316,7 +345,7 @@
                             <div class="sub-text">SECURITY<br>SALES</div>
                         </div>
                         <div class="metric-group">
-                            <div class="blink red" style="font-size: 10px;">ACTIVE<br>STREAK</div>
+                            <div class="blink red" style="font-size: 12px; margin-top:5px;">ACTIVE<br>STREAK</div>
                         </div>
                     </div>
                 </div>
@@ -401,7 +430,7 @@
                 <div class="bullet">> CO-SELL COMBOS WITH AEs & PARTNERS TO CLOSE COMPLEX DEALS</div>
             </div>
             
-            <div class="exp-item" style="border:none">
+            <div class="exp-item">
                 <div class="exp-role">SALES ENGINEER / AUTOMATION ENGINEER</div>
                 <div class="exp-company">XAMARIN (ACQUIRED BY MSFT) | 2014 - 2016</div>
                 <div class="bullet">> SECURED PINTEREST, SLACK, QUORA & HEADSPACE WINS</div>
@@ -419,14 +448,14 @@
             <div class="card-title">GAME OVER?</div>
             <div style="text-align: center;">
                 <p class="yellow" style="margin-bottom: 20px;">READY TO START A NEW GAME?</p>
-                <div style="margin-bottom: 10px;">
-                    <a href="mailto:dadambarlow@gmail.com" style="color:#FFF; text-decoration: none;">&gt; EMAIL: DADAMBARLOW@GMAIL.COM</a>
+                <div style="margin-bottom: 15px;">
+                    <a href="mailto:dadambarlow@gmail.com" style="color:#FFF; text-decoration: none; border-bottom: 1px dashed #555;">&gt; EMAIL: DADAMBARLOW@GMAIL.COM</a>
                 </div>
-                <div style="margin-bottom: 10px;">
-                    <a href="https://linkedin.com/in/adbarlow" target="_blank" style="color:#FFF; text-decoration: none;">&gt; LINKEDIN PROFILE</a>
+                <div style="margin-bottom: 15px;">
+                    <a href="https://linkedin.com/in/adbarlow" target="_blank" style="color:#FFF; text-decoration: none; border-bottom: 1px dashed #555;">&gt; LINKEDIN PROFILE</a>
                 </div>
                 <div>
-                    <a href="https://github.com/AdamTheCreator" target="_blank" style="color:#FFF; text-decoration: none;">&gt; GITHUB REPO</a>
+                    <a href="https://github.com/AdamTheCreator" target="_blank" style="color:#FFF; text-decoration: none; border-bottom: 1px dashed #555;">&gt; GITHUB REPO</a>
                 </div>
             </div>
             <div class="back-btn" onclick="showIntro()">BACK TO MENU</div>
@@ -439,18 +468,56 @@
     </footer>
 
     <script>
-        function showSection(sectionId) {
-            // Hide intro
-            document.getElementById('intro-screen').classList.add('hidden');
-            // Show dashboard
-            document.getElementById('dashboard').classList.remove('hidden');
+        // NAVIGATION LOGIC
+        let menuIndex = 0;
+        const menuItems = document.querySelectorAll('.menu-item');
 
-            // Hide all cards first
+        function updateMenuSelection() {
+            menuItems.forEach((item, index) => {
+                if (index === menuIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Keyboard Event Listener for Menu
+        window.addEventListener('keydown', (e) => {
+            const introScreen = document.getElementById('intro-screen');
+            if (introScreen.classList.contains('hidden')) return; // Don't nav if not on intro
+
+            if (e.key === 'ArrowDown') {
+                menuIndex = (menuIndex + 1) % menuItems.length;
+                updateMenuSelection();
+                e.preventDefault();
+            } else if (e.key === 'ArrowUp') {
+                menuIndex = (menuIndex - 1 + menuItems.length) % menuItems.length;
+                updateMenuSelection();
+                e.preventDefault();
+            } else if (e.key === 'Enter') {
+                const selectedAction = menuItems[menuIndex].getAttribute('onclick');
+                eval(selectedAction); // Trigger the onclick event
+            }
+        });
+
+        // Hover Logic to update keyboard state
+        menuItems.forEach((item, index) => {
+            item.addEventListener('mouseenter', () => {
+                menuIndex = index;
+                updateMenuSelection();
+            });
+        });
+
+        function showSection(sectionId) {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            window.scrollTo(0, 0);
+
             document.getElementById('sec-stats').classList.add('hidden');
             document.getElementById('sec-missions').classList.add('hidden');
             document.getElementById('sec-contact').classList.add('hidden');
 
-            // Show selected
             if (sectionId === 'all') {
                 document.getElementById('sec-stats').classList.remove('hidden');
                 document.getElementById('sec-missions').classList.remove('hidden');
@@ -463,6 +530,7 @@
         function showIntro() {
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('intro-screen').classList.remove('hidden');
+            window.scrollTo(0, 0);
         }
     </script>
 </body>
