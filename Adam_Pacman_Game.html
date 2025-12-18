@@ -34,7 +34,7 @@
 
         #game-area {
             position: relative;
-            width: 100%;
+            width: 95%;
             max-width: 400px;
             text-align: center;
         }
@@ -44,55 +44,120 @@
             display: block;
             margin: 0 auto;
             border: 2px solid var(--wall-blue);
-            box-shadow: 0 0 10px var(--wall-blue);
+            box-shadow: 0 0 15px var(--wall-blue);
+            max-width: 100%;
+            height: auto;
         }
 
         #game-ui {
             display: flex;
             justify-content: space-between;
-            width: 380px;
-            margin: 0 auto 10px auto;
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto 15px auto;
             font-size: 12px;
             color: var(--pac-yellow);
+            padding: 0 5px;
+            box-sizing: border-box;
         }
 
         #game-instructions {
             font-size: 10px;
-            color: #888;
+            color: #666;
             margin-top: 15px;
             text-transform: uppercase;
         }
 
-        .back-btn {
+        .btn {
             margin-top: 20px;
-            padding: 15px 30px;
+            padding: 15px 20px;
             border: 2px solid #FFF;
             background: #000;
             color: #FFF;
             font-family: 'Press Start 2P', cursive;
-            font-size: 12px;
+            font-size: 10px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
+            transition: background 0.2s;
         }
-        .back-btn:hover { background: #FFF; color: #000; }
+        .btn:hover { background: #333; }
+
+        /* NAME INPUT MODAL */
+        #name-modal, #game-over-modal {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .hidden { display: none !important; }
+
+        input[type="text"] {
+            background: #000;
+            border: 2px solid var(--wall-blue);
+            color: var(--pac-yellow);
+            font-family: 'Press Start 2P', cursive;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+        
+        .modal-box {
+            border: 4px double var(--wall-blue);
+            padding: 30px;
+            text-align: center;
+            background: #000;
+        }
 
     </style>
 </head>
 <body>
 
+    <!-- UI HUD -->
     <div id="game-ui">
         <div id="score-display">SCORE: 0</div>
-        <div>PLAYER: ADAM</div>
+        <div>PLAYER: <span id="player-name-display">???</span></div>
     </div>
 
+    <!-- GAME CANVAS -->
     <div id="game-area">
         <canvas id="gameCanvas" width="380" height="300"></canvas>
     </div>
 
     <div id="game-instructions">ARROWS OR SWIPE TO MOVE</div>
+    <div style="font-size: 8px; color: #444; margin-top: 5px;">LEVEL: REAL LIFE (HARD)</div>
 
-    <a href="index.html" class="back-btn">BACK TO MENU</a>
+    <a href="index.html" class="btn">BACK TO MENU</a>
+
+    <!-- NAME INPUT MODAL -->
+    <div id="name-modal">
+        <div class="modal-box">
+            <h2 style="color: var(--ghost-cyan); font-size: 16px; margin-bottom: 20px;">IDENTIFY YOURSELF</h2>
+            <p style="font-size: 10px; color: #AAA;">ENTER PLAYER NAME:</p>
+            <input type="text" id="player-name-input" maxlength="8" placeholder="ADAM" autofocus>
+            <br>
+            <button class="btn" onclick="startGame()">INSERT COIN</button>
+        </div>
+    </div>
+
+    <!-- GAME OVER / WIN MODAL -->
+    <div id="game-over-modal" class="hidden">
+        <div class="modal-box">
+            <h2 id="modal-title" style="color: var(--ghost-red); font-size: 20px; margin-bottom: 20px;">GAME OVER</h2>
+            <p id="modal-score" style="font-size: 12px; color: var(--pac-yellow); margin-bottom: 30px;">SCORE: 0</p>
+            
+            <button class="btn" onclick="restartGame()">TRY AGAIN?</button>
+            <br>
+            <a href="index.html" class="btn" style="border-color: #555; color: #888;">QUIT TO MENU</a>
+        </div>
+    </div>
 
     <script>
         // --- GAME ENGINE ---
@@ -103,6 +168,7 @@
         const ROWS = 15;
         let gameRunning = false;
         let score = 0;
+        let playerName = "ADAM";
 
         // Map: 1=Wall, 0=Dot, 2=Empty/PacStart, 9=GhostStart
         const mapLayout = [
@@ -125,15 +191,21 @@
 
         let walls = [];
         let dots = [];
-        // SLOWER SPEED SET HERE: 0.075
-        let pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.075, moveProgress: 0, currentX: 9, currentY: 13 };
-        let ghosts = [
-            { x: 9, y: 7, color: 'red', dir: 1, speed: 0.05, moveProgress: 0, currentX: 9, currentY: 7 },
-            { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.05, moveProgress: 0, currentX: 10, currentY: 7 }
-        ];
+        let pacman = {};
+        let ghosts = [];
         
+        // Touch variables
         let touchStartX = 0;
         let touchStartY = 0;
+
+        function startGame() {
+            const inputName = document.getElementById('player-name-input').value;
+            if(inputName.trim() !== "") playerName = inputName.toUpperCase();
+            document.getElementById('player-name-display').innerText = playerName;
+            document.getElementById('name-modal').classList.add('hidden');
+            
+            initGame();
+        }
 
         function initGame() {
             resetLevel();
@@ -147,6 +219,11 @@
             
             requestAnimationFrame(gameLoop);
         }
+        
+        function restartGame() {
+            document.getElementById('game-over-modal').classList.add('hidden');
+            initGame();
+        }
 
         function resetLevel() {
             walls = [];
@@ -157,10 +234,10 @@
                     if(mapLayout[r][c] === 0) dots.push({x:c, y:r, active:true});
                 }
             }
-            pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.075, moveProgress: 0, currentX: 9, currentY: 13 };
+            pacman = { x: 9, y: 13, dir: 4, nextDir: 4, speed: 0.08, moveProgress: 0, currentX: 9, currentY: 13 };
             ghosts = [
-                { x: 9, y: 7, color: 'red', dir: 1, speed: 0.05, moveProgress: 0, currentX: 9, currentY: 7 },
-                { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.05, moveProgress: 0, currentX: 10, currentY: 7 }
+                { x: 9, y: 7, color: 'red', dir: 1, speed: 0.055, moveProgress: 0, currentX: 9, currentY: 7 }, // Slightly faster for "Real Life"
+                { x: 10, y: 7, color: 'pink', dir: 3, speed: 0.055, moveProgress: 0, currentX: 10, currentY: 7 }
             ];
         }
 
@@ -222,7 +299,7 @@
 
             ghosts.forEach(g => {
                 const dist = Math.hypot(pacman.currentX - g.currentX, pacman.currentY - g.currentY);
-                if(dist < 0.5) gameOver();
+                if(dist < 0.5) triggerGameOver(false);
             });
 
             dots.forEach(d => {
@@ -337,22 +414,27 @@
 
         function checkWin() {
             if(dots.every(d => !d.active)) {
-                alert("YOU WIN! SCORE: " + score);
-                resetLevel();
-                score = 0;
-                updateScore();
+                triggerGameOver(true);
             }
         }
 
-        function gameOver() {
-            alert("GAME OVER! SCORE: " + score);
-            resetLevel();
-            score = 0;
-            updateScore();
+        function triggerGameOver(win) {
+            gameRunning = false;
+            const modal = document.getElementById('game-over-modal');
+            const title = document.getElementById('modal-title');
+            const scoreText = document.getElementById('modal-score');
+            
+            modal.classList.remove('hidden');
+            scoreText.innerText = "SCORE: " + score;
+            
+            if(win) {
+                title.innerText = "MISSION ACCOMPLISHED!";
+                title.style.color = "#00FF00";
+            } else {
+                title.innerText = "GAME OVER";
+                title.style.color = "#FF0000";
+            }
         }
-
-        // Auto-start
-        initGame();
 
     </script>
 </body>
